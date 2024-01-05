@@ -6,19 +6,19 @@ def BatchSearch(API_KEY):
     payload = {
         "geo_codes": [103644278],
         "geo_codes_exclude": [],
-        "title_keywords": ["Director", "Manager", "Ambassador", "Head"],
+        "title_keywords": [],
         "title_keywords_exclude": [],
-        "industry_codes": [144, 57, 68, 1594, 6, 1810],
+        "industry_codes": [],
         "industry_codes_exclude": [],
         "current_company_ids": [],
         "past_company_ids": [],
-        "company_headcounts": ["51-200"],
+        "company_headcounts": [],
         "profile_languages": ["English"],
-        "functions": ["Administrative"],
+        "functions": [],
         "functions_exclude": [],
         "seniority_levels": [],
         "activity_and_share_experiences": [],
-        "keywords": "system",
+        "keywords": "food service manager",
         "limit": 1
     }
 

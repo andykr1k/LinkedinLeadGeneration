@@ -12,7 +12,7 @@ def main(status):
 	req_id = BatchSearch(API_KEY)
 	
 	checkbatchstatus = CheckBatchStatus(API_KEY, req_id)
-    
+
 	if checkbatchstatus:
 		json_response = GetBatchResults(API_KEY, req_id, 1)
 		status['ScrapeLinkedin']['status'] = True
