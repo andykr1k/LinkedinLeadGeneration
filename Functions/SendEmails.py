@@ -1,7 +1,10 @@
 import os
-import resend
+import mailchimp_transactional as MailchimpTransactional
+from mailchimp_transactional.api_client import ApiClientError
 from dotenv import load_dotenv
 from supabase import create_client, Client
+import pandas as pd
+from datetime import datetime
 
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_API_KEY")
@@ -13,35 +16,40 @@ newsletter_end = "<h2>The future of sustainable coffee</h2><p>At Heirloom, we ai
 
 def SendEmails(status):
     load_dotenv()
-    resend.api_key = os.getenv("RESEND_API_KEY")
+    key = os.environ.get("MAILCHIMP_API_KEY")
+
+    mailchimp = MailchimpTransactional.Client(key)
     
     f = open(
         os.path.join(os.path.dirname(__file__), "../background.webp"), "rb"
     ).read()
     
-    # Fetch Rows from DB
-    # Check if New or Exisiting
-    
-    dear = supabase.table('FoodServiceManagers').select('personalized_dear').eq('personal_email', 'david.wei@accenture.com').execute()
-    welcome = supabase.table('FoodServiceManagers').select('personalized_welcome').eq('personal_email', 'david.wei@accenture.com').execute()
+    response = supabase.table('FoodServiceManagers').select("*").execute()
+    df = response.data
 
-    # If new send welcome to newsletter
-    # Else send newsletter
+    df['created_at'] = pd.to_datetime(df['created_at'])
+    current_month = datetime.now().month
 
     f = open(
         os.path.join(os.path.dirname(__file__), "../background.webp"), "rb"
     ).read()
 
-    r = resend.Emails.send({
-        "from": 'onboarding@resend.dev',
-        "to": "it@heirloomcoffeeroasters.com",
-        "subject": "An Invitation To Our Newsletter - Heirloom Coffee Roaster's",
-        "attachments": [{"filename": "background.webp", "content": list(f)}],
-        "html": newsletter_start + "<p>" + dear + "</p>" + "<p>"  + welcome + "</p>" + newsletter_end
-    })
+    for person in df:
+        if df['welcome_sent'] == False and df['personal_email'] != None:
+            message = {
+                "from_email": "fsm@heirloomcoffeeroasters.com",
+                "subject": "An Invitation To Our Newsletter - Heirloom Coffee Roaster's",
+                "html": newsletter_start + "<p>" + df['personalized_dear'] + "</p>" + "<p>" + df['personalized_welcome'] + "</p>" + newsletter_end,
+                "to": [
+                    {
+                        "email": "it@heirloomcoffeeroasters.com",
+                        "type": "to"
+                    }
+                ],
+                "attachments": [{"name": "background.webp", "type":"webp", "content": list(f)}]
+            }
+            data, count = supabase.table('FoodServiceManagers').update({'welcome_sent': True}).eq('personal_email', df['personal_email']).execute()
 
-    # Update db saying message sent
-    data, count = supabase.table('countries').update({'welcome_sent': True}).eq('personal_email', 'david.wei@accenture.com').execute()
     status['SendEmails']['status'] = True
     
     return
