@@ -4,3 +4,4 @@ supabase
 resend
 requests
 openai
+mailchimp-transactional

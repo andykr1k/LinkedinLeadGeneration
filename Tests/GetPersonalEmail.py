@@ -19,6 +19,3 @@ def GetPersonalEmail(url):
     print(data.get('emails')[0])
 
     return
-
-
-GetPersonalEmail("https://www.linkedin.com/in/elizbas/")

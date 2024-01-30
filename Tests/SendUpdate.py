@@ -8,7 +8,7 @@ def SendUpdate():
 
     r = resend.Emails.send({
         "from": 'onboarding@resend.dev',
-        "to": "fsm@heirloomcoffeeroasters.com",
+        "to": "it@heirloomcoffeeroasters.com",
         "subject": "Current Month FSM has been ran!",
         "html": "<p>Current Month FSM has been ran!<p>"
     })
